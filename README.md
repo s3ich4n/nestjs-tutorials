@@ -1,4 +1,4 @@
-# Nest.js 입문
+# NestJS 입문
 
 이 Repository는 [해당 링크](https://wikidocs.net/book/7059)의 게시글을 따라해본다.
 
