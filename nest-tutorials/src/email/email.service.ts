@@ -34,7 +34,7 @@ export class EmailService {
       subject: '[s3ich4n] Signup verification email',
       html: `
         Press confirm button to verify your account.<br/>
-        <form action="${url}" method="POST>
+        <form action="${url}" method="POST">
           <button>confirm</button>
         </form>
       `,
