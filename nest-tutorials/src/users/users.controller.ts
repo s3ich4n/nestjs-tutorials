@@ -1,16 +1,26 @@
-import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Query,
+  ParseIntPipe,
+  HttpStatus,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { UserLoginDto } from './dto/user-login.dto';
 import { UserInfo } from './UserInfo';
 import { UsersService } from './users.service';
+import { ValidationPipe } from '@nestjs/common';
 
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Post()
-  async createUser(@Body() dto: CreateUserDto): Promise<void> {
+  async createUser(@Body(ValidationPipe) dto: CreateUserDto): Promise<void> {
     console.log(dto);
     const { name, email, password } = dto;
     await this.usersService.createUser(name, email, password);
@@ -33,7 +43,13 @@ export class UsersController {
   }
 
   @Get('/:id')
-  async getUserInfo(@Param('id') userId: string): Promise<UserInfo> {
+  async getUserInfo(
+    @Param(
+      'id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    userId: string,
+  ): Promise<UserInfo> {
     console.log(userId);
 
     return await this.usersService.getUserInfo(userId);
