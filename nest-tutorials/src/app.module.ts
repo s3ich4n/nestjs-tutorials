@@ -24,8 +24,9 @@ import emailConfig from './config/emailConfig';
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: process.env.DATABASE_SYNCHRONIZE === 'true',   // ‼ 주의 ‼
-      migrations: [__dirname + '/**/migrations/*.js'],
+      synchronize: false, // ‼ 주의 ‼
+      migrations: [__dirname + '/**/migrations/*{.ts,.js}'],
+      migrationsRun: false,
       migrationsTableName: 'migrations',
     }),
   ],
