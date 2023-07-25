@@ -1,21 +1,17 @@
 import { Module } from '@nestjs/common';
 import { UsersModule } from './users/users.module';
-import { EmailModule } from './email/email.module';
 import { ConfigModule } from '@nestjs/config';
 import { validationSchema } from './config/validationSchema';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthService } from './auth/auth.service';
-import { AuthModule } from './auth/auth.module';
 import emailConfig from './config/emailConfig';
+import authConfig from './config/authConfig';
 
 @Module({
   imports: [
-    AuthModule,
     UsersModule,
-    EmailModule,
     ConfigModule.forRoot({
       envFilePath: [`${__dirname}/config/env/.env.${process.env.NODE_ENV}`],
-      load: [emailConfig],
+      load: [emailConfig, authConfig],
       isGlobal: true,
       validationSchema,
     }),

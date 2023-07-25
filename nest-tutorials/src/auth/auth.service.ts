@@ -1,11 +1,45 @@
-import { Injectable } from '@nestjs/common';
+import * as jwt from 'jsonwebtoken';
+
+import { ConfigType } from '@nestjs/config';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+
+import authConfig from 'src/config/authConfig';
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
 
 @Injectable()
 export class AuthService {
-  async login(id: string, name: string, email: string): Promise<string> {
-    // 쉽게짜기
-    // DB에 똑같이 쿼리해서 값 갖고오기
-    // 일단 라이브러리 찾기
-    // JWT 토큰 관련 처리하기
+  constructor (
+    @Inject(authConfig.KEY) private config: ConfigType<typeof authConfig>,
+  ) { }
+
+  async login(user: User): Promise<string> {
+    const payload = { ...user };
+
+    return jwt.sign(payload, this.config.secret, {
+      expiresIn: '1d',
+      audience: "example.com",
+      issuer: "example.com",
+    });
   }
+
+  verify(jwtString: string) {
+    try {
+      const payload = jwt.verify(jwtString, this.config.secret) as (jwt.JwtPayload | string) & User;
+      console.log(`after logic: ${payload.id}, ${payload.email} .... ${typeof payload}`)
+
+      const { id, email } = payload;
+
+      return {
+        userId: id,
+        email,
+      }
+    } catch (e) {
+      throw new UnauthorizedException()
+    }
+  };
 }

@@ -1,8 +1,13 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
+import { AuthService } from './auth/auth.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
+  constructor(
+    private authService: AuthService,
+  ) {}
+
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
@@ -10,9 +15,12 @@ export class AuthGuard implements CanActivate {
     return this.validateRequest(request);
   }
 
-  private validateRequest(request: any) {
-    // fixme
-    //  request를 써서 로직 구현필요!
-    return false;
+  private validateRequest(
+    request: any
+  ) {
+    const jwtString = request.headers.authorization.split('Bearer ')[1];
+    this.authService.verify(jwtString);
+
+    return true;
   }
 }

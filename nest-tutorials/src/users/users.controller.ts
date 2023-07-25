@@ -1,26 +1,30 @@
 import {
+  Body,
   Controller,
   Get,
+  Headers,
+  HttpCode,
+  HttpStatus,
   Post,
-  Body,
   Param,
   Query,
-  ParseIntPipe,
-  HttpStatus,
   UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
+
+import { AuthGuard } from 'src/auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
-import { VerifyEmailDto } from './dto/verify-email.dto';
 import { UserLoginDto } from './dto/user-login.dto';
 import { UserInfo } from './UserInfo';
 import { UsersService } from './users.service';
-import { ValidationPipe } from '@nestjs/common';
-import { AuthGuard } from 'src/auth.guard';
+import { VerifyEmailDto } from './dto/verify-email.dto';
 
-@UseGuards(AuthGuard)
+
 @Controller('users')
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+  ) {}
 
   @Post()
   async createUser(@Body(ValidationPipe) dto: CreateUserDto): Promise<void> {
@@ -30,6 +34,7 @@ export class UsersController {
   }
 
   @Post('/email-verify')
+  @HttpCode(200)
   async verifyEmail(@Query() dto: VerifyEmailDto): Promise<string> {
     console.log(dto);
     const { signupVerifyToken } = dto;
@@ -38,23 +43,15 @@ export class UsersController {
   }
 
   @Post('/login')
+  @HttpCode(200)
   async login(@Body() dto: UserLoginDto): Promise<string> {
-    console.log(dto);
     const { email, password } = dto;
-
     return await this.usersService.login(email, password);
   }
 
+  @UseGuards(AuthGuard)
   @Get('/:id')
-  async getUserInfo(
-    @Param(
-      'id',
-      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
-    )
-    userId: string,
-  ): Promise<UserInfo> {
-    console.log(userId);
-
+  async getUserInfo(@Param('id') userId: string): Promise<UserInfo> {
     return await this.usersService.getUserInfo(userId);
   }
 }

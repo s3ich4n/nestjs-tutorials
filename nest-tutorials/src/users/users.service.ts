@@ -1,13 +1,18 @@
+import { 
+  Headers,
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 import * as uuid from 'uuid';
+import { ulid } from 'ulid';
 
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { AuthService } from 'src/auth/auth.service';
 import { EmailService } from 'src/email/email.service';
 import { UserInfo } from './UserInfo';
-import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entity/user.entity';
-import { DataSource, Repository } from 'typeorm';
-import { ulid } from 'ulid';
-import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class UsersService {
@@ -22,7 +27,7 @@ export class UsersService {
   async createUser(name: string, email: string, password: string) {
     const userExist = await this.checkUserExists(email);
 
-    if (userExist) {
+    if (!userExist) {
       throw new UnprocessableEntityException(
         'Unable to signup with this email address',
       );
@@ -51,18 +56,35 @@ export class UsersService {
   }
 
   async login(email: string, password: string): Promise<string> {
-    // todo
-    //  1. email, password로 로그인 처리
-    //  2. 토큰 발급
-    throw new Error('method not implemented');
+    const user = await this.usersRepository.findOne({
+      where: { email, password }
+    })
+
+    if (!user) {
+      throw new NotFoundException('User does not exist');
+    }
+
+    return this.authService.login({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    })
   }
 
   async getUserInfo(userId: string): Promise<UserInfo> {
-    // todo
-    //  1. userId를 가진 유저가 있나 확인. 없으면 에러
-    //  2. 유저정보를 UserInfo 타입으로 리턴
+    const user = await this.usersRepository.findOne({
+      where: { id: userId }
+    });
 
-    throw new Error('method not implemented');
+    if (!user) {
+      throw new NotFoundException('User does not exist');
+    }
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    }
   }
 
   private async checkUserExists(emailAddress: string) {
