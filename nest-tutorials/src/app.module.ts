@@ -4,10 +4,13 @@ import { EmailModule } from './email/email.module';
 import { ConfigModule } from '@nestjs/config';
 import { validationSchema } from './config/validationSchema';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthService } from './auth/auth.service';
+import { AuthModule } from './auth/auth.module';
 import emailConfig from './config/emailConfig';
 
 @Module({
   imports: [
+    AuthModule,
     UsersModule,
     EmailModule,
     ConfigModule.forRoot({

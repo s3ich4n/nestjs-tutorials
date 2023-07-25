@@ -7,10 +7,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entity/user.entity';
 import { DataSource, Repository } from 'typeorm';
 import { ulid } from 'ulid';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class UsersService {
   constructor(
+    private authService: AuthService,
     private emailService: EmailService,
     private dataSource: DataSource,
     @InjectRepository(UserEntity)
@@ -33,11 +35,19 @@ export class UsersService {
   }
 
   async verifyEmail(signupVerifyToken: string): Promise<string> {
-    // todo
-    //  1. 회원가입 처리중인 유저가 있으면 예외처리
-    //  2. 로그인 상태가 되도록 토큰 발급
+    const user = await this.usersRepository.findOne({
+      where: { signupVerifyToken },
+    });
 
-    throw new Error('method not implemented');
+    if (!user) {
+      throw new NotFoundException('User does not exist');
+    }
+
+    return this.authService.login({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    });
   }
 
   async login(email: string, password: string): Promise<string> {
