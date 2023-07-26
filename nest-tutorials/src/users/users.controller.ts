@@ -2,14 +2,16 @@ import {
   Body,
   Controller,
   Get,
-  Headers,
   HttpCode,
-  HttpStatus,
+  Logger,
+  LoggerService,
   Post,
   Param,
   Query,
   UseGuards,
   ValidationPipe,
+  Inject,
+  InternalServerErrorException,
 } from '@nestjs/common';
 
 import { AuthGuard } from 'src/auth.guard';
@@ -23,12 +25,14 @@ import { VerifyEmailDto } from './dto/verify-email.dto';
 @Controller('users')
 export class UsersController {
   constructor(
+    @Inject(Logger) private readonly logger: LoggerService,
     private usersService: UsersService,
   ) {}
 
   @Post()
   async createUser(@Body(ValidationPipe) dto: CreateUserDto): Promise<void> {
-    console.log(dto);
+    this.printLoggerServiceLog(dto);
+
     const { name, email, password } = dto;
     await this.usersService.createUser(name, email, password);
   }
@@ -53,5 +57,18 @@ export class UsersController {
   @Get('/:id')
   async getUserInfo(@Param('id') userId: string): Promise<UserInfo> {
     return await this.usersService.getUserInfo(userId);
+  }
+
+  private printLoggerServiceLog(dto) {
+    try {
+      throw new InternalServerErrorException('test');
+    } catch (e) {
+      this.logger.error('error: ' + JSON.stringify(dto), e.stack);
+    }
+
+    this.logger.warn('warn: ' + JSON.stringify(dto));
+    this.logger.log('log: ' + JSON.stringify(dto));
+    this.logger.verbose('verbose: ' + JSON.stringify(dto));
+    this.logger.debug('debug: ' + JSON.stringify(dto));
   }
 }

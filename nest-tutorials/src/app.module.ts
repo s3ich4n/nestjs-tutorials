@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
-import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
-import { validationSchema } from './config/validationSchema';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { validationSchema } from './config/validationSchema';
 import emailConfig from './config/emailConfig';
 import authConfig from './config/authConfig';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
