@@ -4,9 +4,7 @@ import { AuthService } from './auth/auth.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(
-    private authService: AuthService,
-  ) {}
+  constructor(private authService: AuthService) {}
 
   canActivate(
     context: ExecutionContext,
@@ -15,9 +13,7 @@ export class AuthGuard implements CanActivate {
     return this.validateRequest(request);
   }
 
-  private validateRequest(
-    request: any
-  ) {
+  private validateRequest(request: any) {
     const jwtString = request.headers.authorization.split('Bearer ')[1];
     this.authService.verify(jwtString);
 

@@ -1,5 +1,6 @@
 import {
   Body,
+  BadRequestException,
   Controller,
   Get,
   HttpCode,
@@ -20,7 +21,6 @@ import { UserLoginDto } from './dto/user-login.dto';
 import { UserInfo } from './UserInfo';
 import { UsersService } from './users.service';
 import { VerifyEmailDto } from './dto/verify-email.dto';
-
 
 @Controller('users')
 export class UsersController {
@@ -56,6 +56,12 @@ export class UsersController {
   @UseGuards(AuthGuard)
   @Get('/:id')
   async getUserInfo(@Param('id') userId: string): Promise<UserInfo> {
+    if (+userId < 1) {
+      throw new BadRequestException(
+        'id is greater than 0',
+        'id format exception',
+      );
+    }
     return await this.usersService.getUserInfo(userId);
   }
 

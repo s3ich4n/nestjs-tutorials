@@ -6,6 +6,7 @@ import { validationSchema } from './config/validationSchema';
 import emailConfig from './config/emailConfig';
 import authConfig from './config/authConfig';
 import { UsersModule } from './users/users.module';
+import { ExceptionModule } from './exception/exception.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { UsersModule } from './users/users.module';
       migrationsRun: false,
       migrationsTableName: 'migrations',
     }),
+    ExceptionModule,
   ],
   controllers: [],
   providers: [],

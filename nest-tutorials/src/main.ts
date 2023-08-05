@@ -11,18 +11,20 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-      logger: WinstonModule.createLogger({
-        transports: [
-          new winston.transports.Console({
-            level: process.env.NODE_ENV === 'production' ? 'info' : 'silly',
-            format: winston.format.combine(
-              winston.format.timestamp(),
-              nestWinstonModuleUtilities.format.nestLike('MyApp', { prettyPrint: true }),
-            ),
-          })
-        ]
-      })
-    });
+    logger: WinstonModule.createLogger({
+      transports: [
+        new winston.transports.Console({
+          level: process.env.NODE_ENV === 'production' ? 'info' : 'silly',
+          format: winston.format.combine(
+            winston.format.timestamp(),
+            nestWinstonModuleUtilities.format.nestLike('MyApp', {
+              prettyPrint: true,
+            }),
+          ),
+        }),
+      ],
+    }),
+  });
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
