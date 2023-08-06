@@ -21,12 +21,14 @@ import { UserLoginDto } from './dto/user-login.dto';
 import { UserInfo } from './UserInfo';
 import { UsersService } from './users.service';
 import { VerifyEmailDto } from './dto/verify-email.dto';
+import { SchedulerRegistry } from '@nestjs/schedule';
 
 @Controller('users')
 export class UsersController {
   constructor(
     @Inject(Logger) private readonly logger: LoggerService,
     private usersService: UsersService,
+    private scheduler: SchedulerRegistry,
   ) {}
 
   @Post()
@@ -63,6 +65,22 @@ export class UsersController {
       );
     }
     return await this.usersService.getUserInfo(userId);
+  }
+
+  @Post('/start')
+  async start() {
+    const job = this.scheduler.getCronJob('cronSample');
+
+    job.start();
+    console.log(`started at ${job.lastDate()}`);
+  }
+
+  @Post('/stop')
+  async stop() {
+    const job = this.scheduler.getCronJob('cronSample');
+
+    job.stop();
+    console.log(`stopped at ${job.lastDate()}`);
   }
 
   private printLoggerServiceLog(dto) {
