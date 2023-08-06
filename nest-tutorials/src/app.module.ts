@@ -7,6 +7,7 @@ import emailConfig from './config/emailConfig';
 import authConfig from './config/authConfig';
 import { UsersModule } from './users/users.module';
 import { ExceptionModule } from './exception/exception.module';
+import { LoggingModule } from './logging/logging.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { ExceptionModule } from './exception/exception.module';
       migrationsTableName: 'migrations',
     }),
     ExceptionModule,
+    LoggingModule,
   ],
   controllers: [],
   providers: [],

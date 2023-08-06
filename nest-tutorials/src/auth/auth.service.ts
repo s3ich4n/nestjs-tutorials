@@ -13,33 +13,39 @@ interface User {
 
 @Injectable()
 export class AuthService {
-  constructor (
+  constructor(
     @Inject(authConfig.KEY) private config: ConfigType<typeof authConfig>,
-  ) { }
+  ) {}
 
   async login(user: User): Promise<string> {
     const payload = { ...user };
 
     return jwt.sign(payload, this.config.secret, {
       expiresIn: '1d',
-      audience: "example.com",
-      issuer: "example.com",
+      audience: 'example.com',
+      issuer: 'example.com',
     });
   }
 
   verify(jwtString: string) {
     try {
-      const payload = jwt.verify(jwtString, this.config.secret) as (jwt.JwtPayload | string) & User;
-      console.log(`after logic: ${payload.id}, ${payload.email} .... ${typeof payload}`)
+      const payload = jwt.verify(jwtString, this.config.secret) as (
+        | jwt.JwtPayload
+        | string
+      ) &
+        User;
+      console.log(
+        `after logic: ${payload.id}, ${payload.email} .... ${typeof payload}`,
+      );
 
       const { id, email } = payload;
 
       return {
         userId: id,
         email,
-      }
+      };
     } catch (e) {
-      throw new UnauthorizedException()
+      throw new UnauthorizedException();
     }
-  };
+  }
 }
