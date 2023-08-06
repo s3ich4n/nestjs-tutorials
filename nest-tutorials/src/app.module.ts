@@ -9,6 +9,10 @@ import { UsersModule } from './users/users.module';
 import { ExceptionModule } from './exception/exception.module';
 import { LoggingModule } from './logging/logging.module';
 import { BatchModule } from './batch/batch.module';
+import { HealthcheckController } from './healthcheck/healthcheck.controller';
+import { TerminusModule } from '@nestjs/terminus';
+import { HttpModule } from '@nestjs/axios';
+import { DogHealthIndicator } from './healthcheck/dog.health';
 
 @Module({
   imports: [
@@ -35,8 +39,10 @@ import { BatchModule } from './batch/batch.module';
     ExceptionModule,
     LoggingModule,
     BatchModule,
+    TerminusModule,
+    HttpModule,
   ],
-  controllers: [],
-  providers: [],
+  controllers: [HealthcheckController],
+  providers: [DogHealthIndicator],
 })
 export class AppModule {}
